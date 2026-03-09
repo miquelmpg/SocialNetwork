@@ -1,0 +1,438 @@
+{
+	"info": {
+		"name": "Social Network",
+		"description": "Colección de endpoints para la API de Iron Projects.\n\nFlujo recomendado:\n1. Registrar usuario (POST /api/users)\n2. Iniciar sesión (POST /api/sessions)\n3. Actualizar perfil (PATCH /api/users/me)\n4. Crear proyecto, reviews, mensajes…\n\nLa sesión se mantiene automáticamente mediante cookies.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "otherUserId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "projectId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "reviewId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "messageId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Registro",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const body = pm.response.json();",
+									"    pm.collectionVariables.set('userId', body.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"alumno@example.com\",\n  \"password\": \"s3cret\",\n  \"name\": \"Alumno Demo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						},
+						"description": "Registra un nuevo usuario. Campos requeridos: email, password, name. Campos opcionales: bio, githubUrl, linkedinUrl, location, languages, avatarUrl, promotion."
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const body = pm.response.json();",
+									"    pm.collectionVariables.set('userId', body.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"alumno@example.com\",\n  \"password\": \"s3cret\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sessions",
+							"host": ["{{baseUrl}}"],
+							"path": ["sessions"]
+						},
+						"description": "Inicia sesión con email y password. La cookie de sesión se guarda automáticamente."
+					},
+					"response": []
+				},
+				{
+					"name": "Cerrar sesión",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sessions",
+							"host": ["{{baseUrl}}"],
+							"path": ["sessions"]
+						},
+						"description": "Cierra la sesión activa. Responde con 204."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Ver mi perfil",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "me"]
+						},
+						"description": "Devuelve el perfil del usuario autenticado con sus proyectos, mensajes enviados y mensajes recibidos populados."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar perfil",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Ana García\",\n  \"bio\": \"Fullstack developer apasionada por React\",\n  \"githubUrl\": \"https://github.com/anagarcia\",\n  \"linkedinUrl\": \"https://linkedin.com/in/anagarcia\",\n  \"location\": \"Barcelona\",\n  \"languages\": [\"ES\", \"EN\"],\n  \"promotion\": \"09.2025\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "me"]
+						},
+						"description": "Actualiza el perfil del usuario autenticado. Todos los campos son opcionales: name, bio, githubUrl, linkedinUrl, location, languages, avatarUrl, promotion."
+					},
+					"response": []
+				},
+				{
+					"name": "Ver perfil de alumno",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{otherUserId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{otherUserId}}"]
+						},
+						"description": "Devuelve el perfil de un alumno con sus proyectos populados. Para otros usuarios solo se populan proyectos (no mensajes)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Crear proyecto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const body = pm.response.json();",
+									"    pm.collectionVariables.set('projectId', body.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"GameHub\",\n  \"description\": \"Plataforma de juegos online multijugador\",\n  \"module\": 2,\n  \"githubRepo\": \"https://github.com/anagarcia/gamehub\",\n  \"liveUrl\": \"https://gamehub.netlify.app\",\n  \"images\": []\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects"]
+						},
+						"description": "Crea un nuevo proyecto asociado al usuario autenticado. Campos requeridos: title, description, module (1, 2 o 3). Opcionales: githubRepo, liveUrl, images (máx. 5). El author y promotion se asignan automáticamente."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar proyectos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects"]
+						},
+						"description": "Lista todos los proyectos."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar proyectos (con filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects?module=2&promotion=09.2025",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects"],
+							"query": [
+								{
+									"key": "module",
+									"value": "2"
+								},
+								{
+									"key": "promotion",
+									"value": "09.2025"
+								},
+								{
+									"key": "author",
+									"value": "{{userId}}",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lista proyectos filtrados por módulo, promoción y/o autor. Todos los filtros son opcionales."
+					},
+					"response": []
+				},
+				{
+					"name": "Ver detalle de proyecto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects/{{projectId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "{{projectId}}"]
+						},
+						"description": "Devuelve el detalle de un proyecto con sus reviews populadas (incluyendo el autor de cada review)."
+					},
+					"response": []
+				},
+				{
+					"name": "Editar proyecto",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"GameHub v2\",\n  \"description\": \"Descripción actualizada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects/{{projectId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "{{projectId}}"]
+						},
+						"description": "Edita un proyecto existente. No se puede cambiar el author. Campos editables: title, description, module, githubRepo, liveUrl, images."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar proyecto",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects/{{projectId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "{{projectId}}"]
+						},
+						"description": "Elimina un proyecto. Solo el autor puede eliminarlo. Responde con 204."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Crear review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const body = pm.response.json();",
+									"    pm.collectionVariables.set('reviewId', body.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comment\": \"Muy buen proyecto, la UI está genial\",\n  \"rating\": 4\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects/{{projectId}}/reviews",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "{{projectId}}", "reviews"]
+						},
+						"description": "Crea una review sobre un proyecto. Campos requeridos: comment, rating (1-5). El author se asigna automáticamente."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar review",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects/{{projectId}}/reviews/{{reviewId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["projects", "{{projectId}}", "reviews", "{{reviewId}}"]
+						},
+						"description": "Elimina una review. Solo el autor de la review puede eliminarla. Responde con 204."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Messages",
+			"item": [
+				{
+					"name": "Enviar mensaje",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const body = pm.response.json();",
+									"    pm.collectionVariables.set('messageId', body.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"subject\": \"Pregunta sobre tu proyecto M2\",\n  \"body\": \"Hola! Me encantó tu proyecto. ¿Qué stack usaste para el backend?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{otherUserId}}/messages",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{otherUserId}}", "messages"]
+						},
+						"description": "Envía un mensaje privado a otro alumno. El :id de la URL es el receptor. Campos requeridos: subject, body. El sender se asigna automáticamente."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar mensaje",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/messages/{{messageId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}", "messages", "{{messageId}}"]
+						},
+						"description": "Elimina un mensaje no leído. Solo el receptor puede eliminar mensajes que aún no hayan sido leídos. Responde con 204."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
