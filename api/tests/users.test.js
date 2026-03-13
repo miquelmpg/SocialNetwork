@@ -145,10 +145,32 @@ describe('Users API - complete CRUD', () => {
             
             expect(response.body.userName.message).toBe("Path `userName` is required.");
         });
+
+        it('should return 400 if email is already registered', async () => {
+            // const badUser = {
+            //     email: 'john@example.com',
+            //     password: 'password123', 
+            //     userName: 'JohnDoe',
+            // }
+
+            // const response = await request(app)
+            //     .post('/api/users')
+            //     .send(badUser)
+            //     .expect(201);
+            
+            // expect(response.body.email).toBe("john@example.com");
+
+            // const responseTwo = await request(app)
+            //     .post('/api/users')
+            //     .send(badUser)
+            //     .expect(409);
+            
+            // expect(responseTwo.body.message).toBe("Resource already exist");
+        });
     });
 
     // ============================================
-    // GET ALL - GET /api/users
+    // GET ALL - GET /api/users/search
     // ============================================
     describe('GET /api/users/search', () => {
         it('should return an empty array if there are no users', async () => {

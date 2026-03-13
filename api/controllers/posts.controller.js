@@ -21,6 +21,10 @@ export async function list(req, res) {
 export async function deletePost(req, res) {
     const post = await Post.findById(req.params.id);
 
+    if(!post) {
+            throw createHttpError(404, 'Post not found');
+    }
+
     if (post.user.toString() !== req.session.user.id.toString()) {
         throw createHttpError(403, "It is not your post!");
     }

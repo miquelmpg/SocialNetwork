@@ -16,6 +16,10 @@ export async function deleteComment(req, res) {
         _id: req.params.commentId,
         post: req.params.id,
     });
+    
+    if(!comment) {
+            throw createHttpError(404, 'Comment not found');
+    }
 
     if (comment.user.toString() !== req.session.user.id.toString()) {
         throw createHttpError(403, "It is not your comment!");

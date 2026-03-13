@@ -113,20 +113,3 @@ export async function remove(req, res) {
 
     res.status(204).end();
 }
-
-// export async function update(req, res) {
-//     delete req.body.email;
-
-//     if (req.params.id === req.session.user.id) {
-//         Object.assign(req.session.user, req.body);
-
-//     if (req.file) {
-//         req.session.user.avatarUrl = req.file.path;
-//     }
-
-//     await req.session.user.save();
-//     res.json(req.session.user);
-//     } else {
-//         throw createHttpError(403, "Not your profile to update");
-//     }
-// }
