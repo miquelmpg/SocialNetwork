@@ -15,6 +15,7 @@ describe('Post API - complete CRUD', () => {
             password: "password123",
             userName: 'JohnDoe',
         });
+        
         const session = await Session.create({ user: user._id });
         cookies = [`sessionId=${session._id.toString()}`];
         id = user.id;
