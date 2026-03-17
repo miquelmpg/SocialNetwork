@@ -44,7 +44,7 @@ function generatePet(usersArray) {
 
 function generatePost(usersArray) {
     return {
-        content: faker.lorem.sentences(faker.number.int({ min: 1, max: 5 })),
+        content: faker.lorem.sentences(faker.number.int({ min: 5, max: 20 })),
         user: faker.helpers.arrayElement(usersArray)._id,
     };
 }
@@ -104,55 +104,36 @@ async function seed() {
     const insertedComments = await Comment.insertMany(commentsData);
     console.log("seeding comment... [OK]");
 
-    // console.log("seeding follows...");
-    // const followsData = Array.from({ length: NUM_FOLLOWS }, () => generateFollow(users));
-    // console.log("First follow:", followsData[0]);
+    const followsData = Array.from({ length: NUM_FOLLOWS }, () => generateFollow(users));
+    console.log("First follow:", followsData[0]);
 
-    // await Follow.insertMany(followsData, { ordered: false });
-    // console.log("seeding follow... [OK]");
+    try {
+        const result = await Follow.insertMany(followsData, { ordered: false });
+        console.log("Inserted:", result.length);
+    } catch (err) {
+        if (err.code === 11000) {
+            console.log("Duplicate follows ignored");
+        } else {
+            throw err;
+        }
+    }
 
-    // console.log("seeding likes...");
-    // const likesData = Array.from({ length: NUM_LIKES }, () => generateLike(users, insertedPosts, insertedComments));
-    // console.log("First like:", likesData[0]);
+    console.log("seeding follow... [OK]");
 
-    // await Like.insertMany(likesData, { ordered: false });
-    // console.log("seeding like... [OK]");
+    console.log("seeding likes...");
 
-    // console.log("seeding follows...");
+    const likesData = Array.from({ length: NUM_LIKES }, () => generateLike(users, insertedPosts, insertedComments));
 
-const followsData = Array.from({ length: NUM_FOLLOWS }, () => generateFollow(users));
-console.log("First follow:", followsData[0]);
+    console.log("First like:", likesData[0]);
 
-try {
-  const result = await Follow.insertMany(followsData, { ordered: false });
-  console.log("Inserted:", result.length);
-} catch (err) {
-  if (err.code === 11000) {
-    console.log("Duplicate follows ignored");
-  } else {
-    throw err;
-  }
-}
+    try {
+        await Like.insertMany(likesData, { ordered: false });
+    } catch (err) {
+        if (err.code !== 11000) throw err;
+        console.log("Duplicate likes ignored");
+    }
 
-console.log("seeding follow... [OK]");
-
-console.log("seeding likes...");
-
-const likesData = Array.from(
-  { length: NUM_LIKES },
-  () => generateLike(users, insertedPosts, insertedComments)
-);
-
-console.log("First like:", likesData[0]);
-
-try {
-  await Like.insertMany(likesData, { ordered: false });
-} catch (err) {
-  if (err.code !== 11000) throw err;
-  console.log("Duplicate likes ignored");
-}
-
-console.log("seeding like... [OK]");
+    console.log("seeding like... [OK]");
 
     console.log("close connection...");
     await mongoose.connection.close();

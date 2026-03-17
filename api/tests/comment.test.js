@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../app.js';
+import mongoose from 'mongoose';
 import Comment from '../models/comment.model.js';
 import { createUserSession, createPost, createComment } from '../utils';
 
@@ -20,7 +21,7 @@ describe('Comment API - complete CRUD', () => {
         otherPost = await createPost('This is an other post', otherUser.id);
         post = await createPost('This is my post', user.id);
 
-        fakeId = "64f1a2b3c4d5e6f7a8b9c0d1";
+        fakeId = new mongoose.Types.ObjectId();
     });
 
     beforeEach(async () => {

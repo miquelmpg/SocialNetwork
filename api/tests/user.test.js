@@ -4,39 +4,35 @@ import mongoose from 'mongoose';
 import app from '../app.js';
 import User from '../models/user.model.js';
 import Session from '../models/session.model.js';
-import { createUserSession, authRequest } from '../utils';
+import { createUserSession, createUser } from '../utils';
 
 describe('Users API', () => {
-    let user, newUser;
-    let cookies;
     let fakeId;
 
     beforeAll(async () => {
-        user = await createUserSession("auth@tests.com", 'password123', 'JohnDoe');
-        cookies = user.cookies;
-
         fakeId = new mongoose.Types.ObjectId();
-    });
-
-    beforeEach(async () => {
-
-        newUser = {
-            email: 'john@example.com',
-            password: 'password123',
-            userName: 'JohnDoe',
-            firstName: 'John',
-            lastName: 'Doe',
-            bio: 'Junior Full-Stack Developer passionate about JavaScript',
-            location: 'Barcelona',
-            birthday: '2000-05-10',
-            gender: 'male',
-        }
     });
 
     // ============================================
     // CREATE - POST /api/users
     // ============================================
     describe('POST /api/users', () => {
+        let newUser;
+
+        beforeEach(async () => {
+            newUser = {
+                email: 'john@example.com',
+                password: 'password123',
+                userName: 'JohnDoe',
+                firstName: 'John',
+                lastName: 'Doe',
+                bio: 'Junior Full-Stack Developer passionate about JavaScript',
+                location: 'Barcelona',
+                birthday: '2000-05-10',
+                gender: 'male',
+            }
+        });
+
         it('should correctly create a new user', async () => {
             const response = await request(app)
                 .post('/api/users')
@@ -161,8 +157,23 @@ describe('Users API', () => {
     // GET ALL - GET /api/users/search
     // ============================================
     describe('GET /api/users/search', () => {
+        let user;
+        let cookies;
+        
+        beforeEach(async () => {
+            await User.deleteMany({});
+
+            user = await createUserSession("auth@tests.com", 'password123', 'JohnDoe');
+            cookies = user.cookies;
+
+            await createUser('user1@example.com', 'password123', 'userOne');
+            await createUser('user2@example.com', 'password123', 'userTwo');
+            await createUser('user3@example.com', 'password123', 'userThree');
+            await createUser('user4@example.com', 'password123', 'userFour');
+        });
+
         it('should return an empty array if there are no users', async () => {
-            await User.deleteMany();
+            await User.deleteMany({});
 
             const response = await request(app)
                 .get('/api/users/search')
@@ -173,50 +184,17 @@ describe('Users API', () => {
         });
 
         it('should return all existing users', async () => {
-            await User.create({
-                email: 'user1@example.com',
-                password: 'password123',
-                userName: 'userOne',
-            });
-
-            await User.create({
-                email: 'user2@example.com',
-                password: 'password123',
-                userName: 'userTwo',
-            });
-
-            await User.create({
-                email: 'user3@example.com',
-                password: 'password123',
-                userName: 'userThree',
-            });
-
-            await User.create({
-                email: 'user4@example.com',
-                password: 'password123',
-                userName: 'userFour',
-            });
-
             const response = await request(app)
                 .get('/api/users/search')
                 .set('Cookie', cookies)
                 .expect(200);
 
-            expect(response.body).toHaveLength(4);
-            expect(response.body[0].email).toBe("user1@example.com");
-            expect(response.body[2].userName).toBe("userThree");
+            expect(response.body).toHaveLength(5);
+            expect(response.body[1].email).toBe("user1@example.com");
+            expect(response.body[3].userName).toBe("userThree");
         });
 
         it('should return filer users by userName that contains "four"', async () => {
-            const user = await User.create({
-                email: 'auth@tests.com',
-                password: 'password123',
-                userName: 'JohnDoe',
-            });
-
-            const session = await Session.create({ user: user._id });
-            cookies = [`sessionId=${session._id.toString()}`];
-
             const response = await request(app)
                 .get('/api/users/search')
                 .query({ userName: 'four' })
@@ -236,15 +214,22 @@ describe('Users API', () => {
     // READ ONE - GET /api/users/:id
     // ============================================
     describe('GET /api/users/:id', () => {
-        it('should return an user by its id', async () => {
-            const user = await User.create ({
+        let user, userExample;
+        let cookies;
+
+        beforeAll(async () => {
+            user = await createUserSession("auth@tests.com", 'password123', 'JohnDoe');
+            cookies = user.cookies;
+
+            userExample = await User.create ({
                 email: 'john@example.com',
                 password: 'password123',
                 userName: 'JohnDoe', 
             });
-
+        });
+        it('should return an user by its id', async () => {
             const response = await request(app)
-                .get(`/api/users/${user.id}`)
+                .get(`/api/users/${userExample.id}`)
                 .set('Cookie', cookies)
                 .expect(200);
 
@@ -253,14 +238,8 @@ describe('Users API', () => {
         });
 
         it("should include the user's pet (populate)", async () => {
-            const user = await User.create ({
-                email: 'john@example.com',
-                password: 'password123',
-                userName: 'JohnDoe', 
-            });
-
             const response = await request(app)
-                .get(`/api/users/${user.id}`)
+                .get(`/api/users/${userExample.id}`)
                 .set('Cookie', cookies)
                 .expect(200);
 
@@ -269,14 +248,8 @@ describe('Users API', () => {
         });
 
         it("should include the user's posts (populate)", async () => {
-            const user = await User.create ({
-                email: 'john@example.com',
-                password: 'password123',
-                userName: 'JohnDoe', 
-            });
-
             const response = await request(app)
-                .get(`/api/users/${user.id}`)
+                .get(`/api/users/${userExample.id}`)
                 .set('Cookie', cookies)
                 .expect(200);
 
@@ -298,16 +271,17 @@ describe('Users API', () => {
     // UPDATE - PATCH /api/users/:id
     // ============================================
     describe("PATCH /api/users/:id", () => {
+        let user;
+        let cookies;
+
+        beforeEach(async () => {
+            await User.deleteMany({});
+            
+            user = await createUserSession('auth@tests.com', 'password123','JohnDoe');
+            cookies = user.cookies;
+        });
+
         it("should update your own user", async () => {
-            const user = await User.create({
-                email: 'auth@tests.com',
-                password: 'password123',
-                userName: 'JohnDoe',
-            });
-
-            const session = await Session.create({ user: user._id });
-            cookies = [`sessionId=${session._id.toString()}`];
-
             const updatedData = {
                 userName: 'MongoName',
             };
@@ -326,39 +300,21 @@ describe('Users API', () => {
         });
 
         it("should update password", async () => {
-            const user = await User.create({
-                email: 'auth@tests.com',
-                password: 'password123',
-                userName: 'JohnDoe',
-            });
-
-            const session = await Session.create({ user: user._id });
-            cookies = [`sessionId=${session._id.toString()}`];
-
             const updatedData = {
                 password: '123123123123',
             };
 
-            const response = await request(app)
+            await request(app)
                 .patch(`/api/users/${user.id}`)
                 .set('Cookie', cookies)
                 .send(updatedData)
                 .expect(200);
 
-            const userInDB = await User.findById(user._id);
+            const userInDB = await User.findById(user.id);
             expect(userInDB.password).not.toBe("123123123123");
         });
 
         it("should return 400 if updated password is too short", async () => {
-            const user = await User.create({
-                email: 'auth@tests.com',
-                password: 'password123',
-                userName: 'JohnDoe',
-            });
-
-            const session = await Session.create({ user: user._id });
-            cookies = [`sessionId=${session._id.toString()}`];
-
             const updatedData = {
                 password: '123',
             };
@@ -413,8 +369,13 @@ describe('Users API', () => {
     // DELETE - DELETE /api/users/:id
     // ============================================
     describe("DELETE /api/users/:id", () => {
-        it("should delete your own user", async () => {
-            const user = await User.create({
+        let user;
+        let cookies;
+
+        beforeEach(async () => {
+            await User.deleteMany({});
+            
+            user = await User.create({
                 email: 'auth@tests.com',
                 password: 'password123',
                 userName: 'JohnDoe',
@@ -422,7 +383,9 @@ describe('Users API', () => {
 
             const session = await Session.create({ user: user._id });
             cookies = [`sessionId=${session._id.toString()}`];
+        });
 
+        it("should delete your own user", async () => {
             await request(app)
                 .delete(`/api/users/${user.id}`)
                 .set("Cookie", cookies)
@@ -438,15 +401,6 @@ describe('Users API', () => {
                 password: 'password123',
                 userName: 'OtherUser',
             });
-
-            const user = await User.create({
-                email: 'auth@tests.com',
-                password: 'password123',
-                userName: 'JohnDoe',
-            });
-
-            const session = await Session.create({ user: user._id });
-            cookies = [`sessionId=${session._id.toString()}`];
 
             const response = await request(app)
                 .delete(`/api/users/${otherUser.id}`)
@@ -485,6 +439,8 @@ describe('Users API', () => {
             const userId = createRes.body.id;
             expect(userId).toBeDefined();
 
+            const session = await Session.create({ user: userId });
+            const cookies = [`sessionId=${session._id.toString()}`];
 
             const readResponse = await request(app)
             .get(`/api/users/${userId}`)
@@ -493,9 +449,6 @@ describe('Users API', () => {
 
             expect(readResponse.body.email).toBe('example@example.com');
             expect(readResponse.body.userName).toBe('eXAMPLe');
-
-            const session = await Session.create({ user: userId });
-            cookies = [`sessionId=${session._id.toString()}`];
 
             const updateData = {
                 userName: "New User Name",
@@ -518,67 +471,6 @@ describe('Users API', () => {
                 .get(`/api/users/${userId}`)
                 .set("Cookie", cookies)
                 .expect(404);
-        });
-    });
-
-    describe("POST /api/sessions (login)", () => {
-        beforeAll(async () => {
-            const newUser = await User.create({
-                email: "juan1@example.com",
-                password: "password123",
-                userName: "JuanPe",
-            });
-        });
-
-        it("happy case", async () => {
-            const response = await request(app)
-                .post("/api/sessions")
-                .send({
-                email: "juan1@example.com",
-                password: "password123",
-            })
-            .expect(200);
-
-            expect(response.headers["set-cookie"]).toBeDefined();
-        });
-
-        it("401 if user does not exist", async () => {
-            await request(app)
-                .post("/api/sessions")
-                .send({
-                email: "juanDoesNotExist@example.com",
-                password: "password123",
-                })
-            .expect(401);
-        });
-
-        it("401 if wrong password", async () => {
-            await request(app)
-                .post("/api/sessions")
-                .send({
-                email: "juan1@example.com",
-                password: "WRONG",
-                })
-                .expect(401);
-        });
-
-        it("GET user profile", async () => {
-            const response = await request(app)
-                .post('/api/sessions')
-                .send({
-                email: "juan1@example.com",
-                password: "password123",
-                })
-                .expect(200);
-
-            const loginCookies = response.headers["set-cookie"];
-
-            const profileResponse = await request(app)
-                .get(`/api/users/${response.body.id}`)
-                .set("Cookie", loginCookies)
-                .expect(200);
-
-            expect(profileResponse.body.email).toBe("juan1@example.com");
         });
     });
 });

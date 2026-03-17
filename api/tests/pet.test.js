@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import app from '../app.js';
+import mongoose from "mongoose";
 import Pet from "../models/pet.model.js";
-import { createUserSession } from '../utils/index.js';
+import { createUserSession } from '../utils';
 
 describe('Pet API - complete CRUD', () => {
     let user;
@@ -16,7 +17,7 @@ describe('Pet API - complete CRUD', () => {
         user = await createUserSession("auth@tests.com", 'password123', 'JohnDoe');
         cookies = user.cookies;
 
-        fakeId = "64f1a2b3c4d5e6f7a8b9c0d1";
+        fakeId = new mongoose.Types.ObjectId();
 
         updatedPet = {
             name: 'Moka',
@@ -26,8 +27,6 @@ describe('Pet API - complete CRUD', () => {
     });
 
     beforeEach(async () => {
-        await Pet.deleteMany({});
-
         newPet =  {
             name: 'Mochi',
             species: 'cat',
@@ -115,6 +114,8 @@ describe('Pet API - complete CRUD', () => {
 
             const petInDB = await Pet.findById(pet.id);
             expect(petInDB.name).toBe('Moka');
+            expect(petInDB.bio).toBe('European short hair cat with a calm and friendly nature');
+            expect(petInDB.weight).toBe(3.5);
         });
 
         it('should return 403 if you try to update a pet you do not own', async () => {

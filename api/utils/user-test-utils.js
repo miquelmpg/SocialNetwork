@@ -15,3 +15,17 @@ export async function createUserSession(email, password, userName) {
         id: user.id,
     };
 }
+
+export async function createUser(email, password, userName) {
+    const user = await User.create({
+        email,
+        password,
+        userName,
+    });
+
+    return {
+        email: user.email,
+        password: user.password,
+        userName: user.userName,
+    };
+}

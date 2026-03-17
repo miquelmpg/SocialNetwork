@@ -1,12 +1,14 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../app.js';
+import mongoose from 'mongoose';
 import Follow from '../models/follow.model.js';
-import { createUserSession } from '../utils/user-test-utils.js';
+import { createUserSession } from '../utils';
 
 describe('Follow API - complete CRUD', () => {
     let user, user1, user2, user3, user4;
     let cookies, cookies1, cookies2, cookies3, cookies4;
+    let fakeId;
 
     beforeAll(async () => {
         user = await createUserSession("auth@tests.com", 'password123', 'JohnDoe');
@@ -23,6 +25,8 @@ describe('Follow API - complete CRUD', () => {
 
         user4 = await createUserSession("user4@example.com", 'password123', 'userFour');
         cookies4 = user4.cookies;
+
+        fakeId = new mongoose.Types.ObjectId();
     });
 
     beforeEach(async () => {
@@ -94,8 +98,6 @@ describe('Follow API - complete CRUD', () => {
         
                 
         it('should return 400 if user id does not exist', async () => {
-            const fakeId = '642f1f1f1f1f1f1f1f1f1f1f';
-
             const response = await request(app)
                 .post(`/api/follows/${fakeId}/toggle`)
                 .set('Cookie', cookies)
@@ -144,8 +146,6 @@ describe('Follow API - complete CRUD', () => {
         });
 
         it('should return 400 if user id does not exist', async () => {
-            const fakeId = '642f1f1f1f1f1f1f1f1f1f1f';
-
             const response = await request(app)
                 .get(`/api/follows/${fakeId}/followers`)
                 .set('Cookie', cookies)
@@ -179,8 +179,6 @@ describe('Follow API - complete CRUD', () => {
         });
         
         it('should return 400 if user id does not exist', async () => {
-            const fakeId = '642f1f1f1f1f1f1f1f1f1f1f';
-
             const response = await request(app)
                 .get(`/api/follows/${fakeId}/following`)
                 .set('Cookie', cookies)
@@ -205,8 +203,6 @@ describe('Follow API - complete CRUD', () => {
         });
 
         it('should return 400 if user id does not exist', async () => {
-            const fakeId = '642f1f1f1f1f1f1f1f1f1f1f';
-
             const response = await request(app)
                 .get(`/api/follows/${fakeId}/followers-list`)
                 .set('Cookie', cookies)

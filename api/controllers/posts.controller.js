@@ -19,8 +19,24 @@ export async function list(req, res) {
             $options: "i",
         };
     };
+        
+    if (req.query.minDate || req.query.maxDate) {
+        criteria.createdAt = {};
 
-    const postList = await Post.find(criteria).sort({ createdAt: -1 }).populate('comments');
+        if (req.query.minDate) {
+            criteria.createdAt = { $gte: req.query.minDate };
+        }
+
+        if (req.query.maxDate) {
+            criteria.createdAt = { $lte: req.query.maxDate };
+        }
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const postList = await Post.find(criteria).sort({ createdAt: -1 }).skip(skip).limit(limit).populate('comments');
 
     res.json(postList);
 }

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../app.js';
+import mongoose from 'mongoose';
 import Like from '../models/like.model.js';
 import { createUserSession, createPost, createComment } from '../utils';
 
@@ -9,6 +10,7 @@ describe('Like API - complete CRUD', () => {
     let cookies, cookies1, cookies2, cookies3, cookies4, cookies5;
     let newPost;
     let newComment;
+    let fakeId;
 
     beforeAll(async () => {
         user = await createUserSession("user@example.com", 'password123', 'user');
@@ -32,6 +34,8 @@ describe('Like API - complete CRUD', () => {
         newPost = await createPost('New post incoming', user.id);
 
         newComment = await createComment('New comment incoming', user.id, newPost.id);
+
+        fakeId = new mongoose.Types.ObjectId();
     });
 
     beforeEach(async () => {
@@ -114,8 +118,6 @@ describe('Like API - complete CRUD', () => {
         });
 
         it('should return 400 if targetId does not exist', async () => {
-            const fakeId = '642f1f1f1f1f1f1f1f1f1f1f';
-
             const response = await request(app)
                 .post(`/api/likes/${fakeId}/toggle`)
                 .set('Cookie', cookies)
@@ -211,8 +213,6 @@ describe('Like API - complete CRUD', () => {
 
         
         it('should return 400 if targetId does not exist', async () => {
-            const fakeId = '642f1f1f1f1f1f1f1f1f1f1f';
-
             const response = await request(app)
                 .get(`/api/likes/${fakeId}/count-likes`)
                 .set('Cookie', cookies)
@@ -302,8 +302,6 @@ describe('Like API - complete CRUD', () => {
         });
         
         it('should return 400 if targetId does not exist', async () => {
-            const fakeId = '642f1f1f1f1f1f1f1f1f1f1f';
-
             const response = await request(app)
                 .get(`/api/likes/${fakeId}/is-liked`)
                 .set('Cookie', cookies)
