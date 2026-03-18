@@ -1,0 +1,62 @@
+import axios from "axios";
+
+const http = axios.create({
+    baseURL:
+        location.host === "PawNet.netlify.app"
+        ? "https://api-ancient-paper-8537.fly.dev/api"
+        : "http://localhost:3000/api",
+    withCredentials: true,
+});
+
+http.interceptors.response.use(
+    (response) => response.data,
+    (error) => Promise.reject(error),
+);
+
+export function register(user) {
+    return http.post('users', user);
+}
+
+export function login(email, password) {
+    return http.post('/sessions', { email, password });
+}
+
+export function logout() {
+    return http.delete('/sessions');
+}
+
+export function usersList() {
+    return http.get('/users');
+}
+
+export function getProfile() {
+    return http.get('/users/me');
+}
+
+export function updateProfile(id) {
+    return http.patch(`/users/${id}`);
+}
+
+export function deleteProfile(id) {
+    return http.delete(`/users/${id}`);
+}
+
+export function createPost(post) {
+    return http.post(`/posts`, post);
+}
+
+export function postsList() {
+    return http.get(`/posts`);
+}
+
+export function deletePost() {
+    return http.delete(`/posts/${id}`);
+}
+
+export function createComment(id) {
+    return http.post(`/posts/${id}/comments`);
+}
+
+export function deleteComment(postId, commentId) {
+    return http.delete(`/posts/${postId}/comments/${commentId}`);
+}
