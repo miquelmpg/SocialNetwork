@@ -29,8 +29,8 @@ export function usersList() {
     return http.get('/users');
 }
 
-export function getProfile() {
-    return http.get('/users/me');
+export function getProfile(id) {
+    return http.get(`/users/${id}`);
 }
 
 export function updateProfile(id) {
@@ -49,12 +49,12 @@ export function postsList() {
     return http.get(`/posts`);
 }
 
-export function deletePost() {
+export function deletePost(id) {
     return http.delete(`/posts/${id}`);
 }
 
-export function createComment(id) {
-    return http.post(`/posts/${id}/comments`);
+export function createComment(postId, comment) {
+    return http.post(`/posts/${postId}/comments`, comment);
 }
 
 export function deleteComment(postId, commentId) {

@@ -18,7 +18,6 @@ export function AuthContextProvider({ children }) {
                 navigate('/login');
             }
         }
-
         userFetch();
     }, []);
 
