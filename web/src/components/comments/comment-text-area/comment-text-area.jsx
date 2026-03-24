@@ -15,7 +15,7 @@ function CommentTextArea({ setPosts, id }) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         const newComment = await ApiService.createComment(id, { content: e.target.value });
-                        setPosts(prev => prev.map(post => post.id === id ? { ...post, comments: [...post.comments, { ...newComment, user: user }] } : post));
+                        setPosts(prev => prev.map(post => post.id === id ? { ...post, comments: [...post.comments, { ...newComment, user: user, likes: [] }] } : post));
                         e.target.value = "";
                     }
                 }}

@@ -15,7 +15,7 @@ function PostTextArea({ setPosts }) {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         const newPost = await ApiService.createPost({ content: e.target.value });
-                        setPosts(prev => ([...prev,{...newPost, user: user, comments: []}]).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+                        setPosts(prev => ([...prev,{...newPost, user: user, comments: [], likes: []}]).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
                         e.target.value = "";
                     }
                 }}

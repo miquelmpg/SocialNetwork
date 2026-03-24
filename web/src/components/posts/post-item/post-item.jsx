@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../contexts/auth-context';
 import * as ApiService from '../../../services/api-service';
+import * as DateUtils from '../../../utils/date-utils';
 
-function PostItem({ id, user, content, createdAt, setPosts }) {
+function PostItem({ id, user, likes, content, createdAt, setPosts, setToggle, usersFollow}) {
+    const { user: currentUser } = useAuth();
 
     async function deletePost(id) {
         await ApiService.deletePost(id);
@@ -10,23 +13,40 @@ function PostItem({ id, user, content, createdAt, setPosts }) {
 
     async function newFollow(id) {
         await ApiService.createFollow(id);
+        await ApiService.getProfile(currentUser.id);
+        setToggle((prev) => !prev);
+    }
+
+    async function addLike(id) {
+        await ApiService.createLike(id);
+        setToggle((prev) => !prev);
     }
     
     return (
-        <div className="container rounded-5 p-3" style={{backgroundColor: '#f5f5f5', position: 'relative'}}>
+        <div className="container rounded-5 p-5" style={{backgroundColor: '#f5f5f5', position: 'relative'}}>
             <div className="">
-                <Link to={`/users/${user.id}`}>
+                <Link to={`/users/${user?.id}`}>
                     <div className='d-flex'>
-                        <img className='rounded-circle' style={{width: '100px'}} src={user.profilePicture} alt="" />
+                        <img className='rounded-circle' style={{width: '100px'}} src={user?.profilePicture} alt="" />
                         <div>
-                            <div>{user.userName}</div>
-                            <div>{createdAt}</div>
+                            <div>{user?.userName}</div>
+                            <div>{DateUtils.dateToString(createdAt)[0]}</div>
+                            <div>{DateUtils.dateToString(createdAt)[1]}</div>
                         </div>
                     </div>
                 </Link>
                 <div style={{textAlign: "justify"}}>{content}</div>
-                <div style={{position: 'absolute', top: 15, right: 20}} onClick={() => deletePost(id)}>X</div>
-                <div style={{position: 'absolute', top: 75, right: 20}} onClick={() => newFollow(id)}>Follow</div>
+                <div style={{position: 'absolute', top: 15, right: 20}} onClick={() => deletePost(id)}><i className="fa fa-times"></i></div>
+                <div style={{position: 'absolute', top: 45, right: 20}} onClick={() => newFollow(user?.id)}>
+                    <i className={usersFollow
+                                    .map((follow) => follow.id)
+                                    .includes(user?.id) ? 'fa fa-minus' : 'fa fa-plus'}>
+                    </i>
+                </div>
+                <div style={{position: 'absolute', bottom: 15, left: 20}} onClick={()=> addLike(id)}>
+                    <i className='fa fa-thumbs-up' style={{color : likes?.map(like => like?.user?.id).includes(currentUser?.id) ? 'red' : ''}}></i>
+                </div>
+                <div style={{position: 'absolute', bottom: 15, left: 50}}>{likes?.length}</div>
             </div>
         </div>
     );

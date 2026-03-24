@@ -33,8 +33,8 @@ export function getProfile(id) {
     return http.get(`/users/${id}`);
 }
 
-export function updateProfile(id) {
-    return http.patch(`/users/${id}`);
+export function updateProfile(id, data) {
+    return http.patch(`/users/${id}`, data);
 }
 
 export function deleteProfile(id) {
@@ -45,8 +45,12 @@ export function createPost(post) {
     return http.post(`/posts`, post);
 }
 
-export function postsList() {
-    return http.get(`/posts`);
+export function postsList(numPage) {
+    return http.get(`/posts?page=${numPage}`);
+}
+
+export function postsListById(id) {
+    return http.get(`/posts/${id}`);
 }
 
 export function deletePost(id) {
@@ -63,4 +67,12 @@ export function deleteComment(postId, commentId) {
 
 export function createFollow(id) {
     return http.post(`/follows/${id}/toggle`);
+}
+
+export function countLikes(id) {
+    return http.get(`/likes/${id}/count-likes`);
+}
+
+export function createLike(id) {
+    return http.post(`/likes/${id}/toggle`);
 }
