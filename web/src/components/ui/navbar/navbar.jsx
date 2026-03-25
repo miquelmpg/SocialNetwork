@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from '../../../contexts/auth-context';
 import * as ApiService from '../../../services/api-service';
 import { useEffect, useState } from "react";
+import socialMedia from '../../../assets/icons/socialNetwork.png'
 import '../navbar/navbar.css'
 
 function Navbar({ toggle, setNumPage }) {
@@ -20,35 +21,36 @@ function Navbar({ toggle, setNumPage }) {
     };
 
     useEffect(() => {
+        if (!currentUser) return;
+
         async function fetchProfile() {
             const reloadUser = await ApiService.getProfile(currentUser.id);
-            setUser(reloadUser)
+            setUser(reloadUser);
         }
+
         fetchProfile();
-    }, [toggle])
+    }, [toggle, currentUser]);
 
     return (
         <>
             {user && <nav className="navbar navbar-expand-lg sticky-top navbar rounded-5" style={{backgroundColor: '#202020'}}>
                 <div className="container-fluid">
-                    <NavLink className="navbar-brand fw-bold text-white" to={'/'} onClick={() => scrollToTop()}>PetNet</NavLink>
-                    <NavLink className='me-auto' to={`/account/${user.id}`}>
-                        <img src={user.profilePicture} className='rounded-circle' style={{width: '45px'}} />
-                    </NavLink>
-                    <div className="text-white">{user.userName}</div>
-                    <div className="text-white">Following: {user.following.length}</div>
-                    <div className="text-white">Followers: {user.followers.length}</div>
-                    <div className="collapse navbar-collapse" id="navbarText">
-                        <ul className="me-auto mb-2 mb-lg-0" style={{width: '100%', listStyle: 'none'}}>
-                            <li className="d-flex align-items-center mx-auto">
-                            </li>
-                        </ul>
+                    <NavLink className="fw-bold text-white" to={'/'} onClick={() => scrollToTop()}><img className="rounded-5 w-50" src={socialMedia}/></NavLink>
+                    <div className="d-flex gap-5 align-items-center">
+                        <NavLink to={`/account/${user.id}`}>
+                            <img src={user.profilePicture} className='rounded-circle' style={{width: '60px'}} />
+                        </NavLink>
+                        <div className="d-flex gap-5 me-auto">
+                            <div className="text-white">Hi, {user.userName}!</div>
+                            <div className="text-white">Following: {user.following.length}</div>
+                            <div className="text-white">Followers: {user.followers.length}</div>
+                        </div>
+                    </div>
                         <ul className="navbar-nav mb-2 mb-lg-0">
                             {user && <div className="d-flex justify-content-around gap-2">
                                         <li className="nav-item"><button className="btn btn-outline-light rounded-pill" onClick={handleLogout}><i className="fa fa-sign-out"></i></button></li>
                                     </div>}
                         </ul>
-                    </div>
                 </div>
             </nav>}
         </>

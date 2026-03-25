@@ -4,11 +4,10 @@ import { PostList } from '../components/posts';
 import { useAuth } from '../contexts/auth-context';
 import * as ApiService from '../services/api-service';
 
-function UserPageActivity() {
+function UserPageActivity({ toggle, setToggle}) {
     const [user, setUser] = useState(null);
     const [userPost, setPosts] = useState(null);
     const [index, setIndex] = useState(0);
-    const [toggle, setToggle] = useState(false);
     const [usersFollow, setUsersFollow] = useState([]);
     const { user: currentUser } = useAuth();
     const { id } = useParams();

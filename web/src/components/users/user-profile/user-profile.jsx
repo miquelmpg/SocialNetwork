@@ -1,12 +1,13 @@
 import { useForm } from 'react-hook-form';
 import * as ApiService from '../../../services/api-service';
+import * as DateUtils from '../../../utils/date-utils';
 
 function UserProfile({ id, userName, email, password, bio, firstName, lastName, location, gender, birthday }) {
     const defaultValues = {
         firstName,
         lastName,
         gender,
-        birthday,
+        birthday: DateUtils.dateToString(birthday)[0],
         location,
         userName,
         email,
@@ -18,6 +19,9 @@ function UserProfile({ id, userName, email, password, bio, firstName, lastName, 
 
 
     const onSubmit = async (data) => {
+        if (!data.password) {
+            delete data.password;
+        }
         await ApiService.updateProfile(id, data);
     };
     

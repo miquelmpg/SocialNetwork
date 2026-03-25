@@ -5,13 +5,12 @@ import { Navbar, PaginationArrows } from '../components/ui';
 import { useAuth } from '../contexts/auth-context';
 import * as ApiService from '../services/api-service';
 
-function HomePage() {
+function HomePage({ toggle, setToggle }) {
     const [posts, setPosts] = useState([]);
     const [usersList, setUsersList] = useState([]);
     const [usersFollow, setUsersFollow] = useState([]);
     const [numPage, setNumPage] = useState(1);
     const [search, setSearch] = useState('');
-    const [toggle, setToggle] = useState(false);
     const { user } = useAuth();
 
     const scrollToTop = () => {
@@ -36,10 +35,16 @@ function HomePage() {
 
     useEffect(() => {
         async function profileFetch() {
-        const posts = await ApiService.postsList(numPage);
-        setPosts(posts);
-    };
+            const posts = await ApiService.postsList(numPage);
+            setPosts(posts);
+        };
         profileFetch();
+
+        const interval = setInterval(() => {
+            profileFetch();
+        }, 15000);
+
+        return () => clearInterval(interval);
     }, [toggle, numPage]);
 
     useEffect(() => {
@@ -57,7 +62,7 @@ function HomePage() {
 
     return ( 
         <>  
-            <Navbar toggle={toggle} setNumPage={setNumPage}/>
+            {/* <Navbar toggle={toggle} setNumPage={setNumPage}/> */}
             <div className='d-flex gap-5'>
                 <UserList usersList={usersList} search={search} setSearch={setSearch} setUsersList={setUsersList} usersFollow={usersFollow} setToggle={setToggle} filter follows={false}/>
                 <PostList setPosts={setPosts} post={posts} setUsersFollow={setUsersFollow} setToggle={setToggle} usersFollow={usersFollow} profile/>
