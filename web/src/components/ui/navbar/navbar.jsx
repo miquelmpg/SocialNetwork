@@ -3,7 +3,6 @@ import { useAuth } from '../../../contexts/auth-context';
 import * as ApiService from '../../../services/api-service';
 import { useEffect, useState } from "react";
 import socialMedia from '../../../assets/icons/socialNetwork.png'
-import '../navbar/navbar.css'
 
 function Navbar({ toggle, setNumPage }) {
     const [user, setUser] = useState()
@@ -36,7 +35,7 @@ function Navbar({ toggle, setNumPage }) {
         <>
             {location.pathname !== '/register' &&
                 location.pathname !== '/login' && 
-                user && <nav className="navbar navbar-expand-lg sticky-top navbar rounded-5" style={{backgroundColor: '#202020'}}>
+                user && <nav className="navbar navbar-expand-lg sticky-top navbar rounded-5" style={{backgroundColor: '#202020', top: '15px'}}>
                 <div className="container-fluid">
                     <NavLink className="fw-bold text-white"  to={'/'} onClick={() => scrollToTop()}>
                         <img className="rounded-5" style={{width: '60px'}} src={socialMedia}/>

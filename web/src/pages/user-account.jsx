@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { UserProfile } from "../components/users";
 import { useAuth } from '../contexts/auth-context';
 import { Layout } from "../components/ui";
+import { sileo } from 'sileo';
 import * as ApiService from '../services/api-service';
 
 function UserAccount() {
@@ -13,11 +14,18 @@ function UserAccount() {
     const { id } = useParams();
     
     async function deleteAccount(id) {
-        const confirmed = confirm(`You are going to delete your account. Are you sure?`);
-        if (!confirmed) return;
-
-        await ApiService.deleteProfile(currentUser.id);
-        navigate('/register')
+        try {
+            const confirmed = confirm(`You are going to delete your account. Are you sure?`);
+            if (!confirmed) return;
+            await ApiService.deleteProfile(currentUser.id);
+            navigate('/register')
+            sileo.success({
+                title: "Changes saved",
+                description: "You account has been deleted successfully.",
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     useEffect(() => {

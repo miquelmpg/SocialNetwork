@@ -1,12 +1,22 @@
 import { useAuth } from '../../../contexts/auth-context';
+import { useState, useEffect } from 'react';
 import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 
 function CommentTextArea({ setPosts, id }) {
+    const [opacity, setOpacity] = useState(0);
     const { user } = useAuth();
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setOpacity(1);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    } , []);
     
     return (
-        <div className="form-floating">
+        <div className="form-floating" style={{opacity: opacity, transition: 'opacity 1s ease'}}>
             <textarea 
                 className="form-control rounded-5" 
                 placeholder="Leave a comment here" 
@@ -22,8 +32,8 @@ function CommentTextArea({ setPosts, id }) {
                         }
                     } catch (error) {
                         if (error.response.status) {
-                            sileo.error({
-                                title: "Something went wrong",
+                            sileo.warning({
+                                title: "Warning",
                                 description: "Offensive language is not allowed.",
                             });
                         }

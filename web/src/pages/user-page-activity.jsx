@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { PostList } from '../components/posts';
 import { useAuth } from '../contexts/auth-context';
+import { sileo } from 'sileo';
+import { PaginationArrows } from '../components/ui';
 import * as ApiService from '../services/api-service';
 
-function UserPageActivity({ toggle, setToggle}) {
+function UserPageActivity({ toggle, setToggle }) {
     const [user, setUser] = useState(null);
     const [userPost, setPosts] = useState(null);
     const [index, setIndex] = useState(0);
@@ -21,13 +23,21 @@ function UserPageActivity({ toggle, setToggle}) {
     }
 
     useEffect(() => {
-        async function getUserProfile() {
-            const detailUser = await ApiService.getProfile(id);
-            const postUser = await ApiService.postsListById(id);
-            setUser(detailUser);
-            setPosts(postUser);
+        try {
+            async function getUserProfile() {
+                const detailUser = await ApiService.getProfile(id);
+                const postUser = await ApiService.postsListById(id);
+                setUser(detailUser);
+                setPosts(postUser);
+
+                if (postUser.length > 0) {
+                    sileo.info({ title: "Use bottom arrows to navigate posts" });
+                }
+            }
+            getUserProfile();
+        } catch (error) {
+            console.log(error);
         }
-        getUserProfile();
     }, [toggle, id]);
 
     useEffect(() => {
@@ -40,12 +50,11 @@ function UserPageActivity({ toggle, setToggle}) {
 
     return (
         <>
-            <div className='d-flex justify-content-center' style={{height: 'auto', minHeight: 'calc(100vh - 76px)'}}>
-                <div className='d-flex align-items-center justify-content-center w-100' style={{position: 'relative'}}>
+            <div className='d-flex justify-content-center' style={{height: 'auto', minHeight: 'calc(100vh - 125px)'}}>
+                <div className='d-flex flex-column align-items-center justify-content-center gap-3 w-100' style={{position: 'relative'}}>
                     {userPost && userPost.length > 0 && <PostList post={[userPost[index]]} setToggle={setToggle} usersFollow={usersFollow} setPosts={setPosts} profile={false} />}
-                    {user && !(userPost.length === 0) && <div className="fa fa-angle-left btn btn-outline-light btn-sm mb-2 rounded-pill align-self-center" style={{width: '35px', height: 'auto', position: 'absolute', top: '20px', left: '245px'}} onClick={() => subtractOneToIndexNumber()}></div>}
-                    {user && !(userPost.length === 0) && <div className="fa fa-angle-right btn btn-outline-light btn-sm mb-2 rounded-pill align-self-center" style={{width: '35px', height: 'auto', position: 'absolute', top: '20px', right: '245px', backgroundColor: ''}} onClick={() => addOneToIndexNumber()}></div>}
                     {userPost && userPost.length === 0 && <div className="text-white rounded-5 d-flex align-items-center justify-content-center fs-5" style={{backgroundColor: '#202020', width: '55vw', height: '15vh'}}>This user does not have comments yet.</div>}
+                    {user && !(userPost.length === 0) && <PaginationArrows numPage={index} addOneToPage={addOneToIndexNumber} subtractOneTpoPage={subtractOneToIndexNumber} posts={userPost} detail />}
                 </div>
             </div>
         </>

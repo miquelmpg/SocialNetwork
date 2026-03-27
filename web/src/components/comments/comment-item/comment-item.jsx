@@ -1,17 +1,18 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useAuth } from './../../../contexts/auth-context';
 import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 import * as DateUtils from '../../../utils/date-utils';
 
 function CommentItem({ id, user, likes, content, createdAt, post, setPosts, usersFollow, setToggle }) {
-
+    const [opacity, setOpacity] = useState(0);
     const { user: currentUser } = useAuth();
 
     async function deleteComment(postId, commentId) {
         try {
             await ApiService.deleteComment(postId, commentId);
-        setPosts(prev => prev.map(post => post.id === postId ? { ...post,  comments: post.comments.filter(comment => comment.id !== commentId)} : post));
+            setPosts(prev => prev.map(post => post.id === postId ? { ...post,  comments: post.comments.filter(comment => comment.id !== commentId)} : post));
         } catch (error) {
             if (error.response.status) {
                 sileo.error({
@@ -32,9 +33,17 @@ function CommentItem({ id, user, likes, content, createdAt, post, setPosts, user
         await ApiService.createLike(id);
         setToggle((prev) => !prev);
     }
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setOpacity(1);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    } , []);
     
     return (
-        <div className="container rounded-5 p-5 mb-2 mt-2" style={{backgroundColor: '#f5f5f5', position: 'relative'}}>
+        <div className="container rounded-5 p-5 mb-2 mt-2" style={{backgroundColor: '#f5f5f5', position: 'relative', opacity: opacity, transition: 'opacity 1s ease'}}>
             <div className="">
                 <Link className='text-decoration-none text-black' to={`/users/${user?.id}`}>
                     <div className='d-flex justify-content-start align-items-center gap-5'>

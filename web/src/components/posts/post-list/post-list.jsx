@@ -22,7 +22,7 @@ function PostList({ post, setPosts, usersFollow, setToggle, profile }) {
                             </div>
                 ))}
 
-                {post.length === 0 && <div>You have reached the end</div>}
+                {post.length === 0 && <div className="text-white rounded-5 d-flex align-items-center justify-content-center fs-5" style={{backgroundColor: '#202020', width: '38vw', height: '15vh'}}>You have reached the end.</div>}
             </div>
         </>
     );

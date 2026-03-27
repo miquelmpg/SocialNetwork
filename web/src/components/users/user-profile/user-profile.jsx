@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 import * as DateUtils from '../../../utils/date-utils';
 
@@ -23,6 +24,10 @@ function UserProfile({ id, userName, email, password, bio, firstName, lastName, 
             delete data.password;
         }
         await ApiService.updateProfile(id, data);
+        sileo.success({
+            title: "Changes saved",
+            description: "You account has been updated successfully.",
+        });
     };
     
     return (
@@ -65,28 +70,28 @@ function UserProfile({ id, userName, email, password, bio, firstName, lastName, 
 
             {/* BIO */}
             <div className="input-group mb-1">
-                <span className="input-group-text"><i className="fa fa-pencil"></i></span>
+                <span className="input-group-text"><i className="fa fa-pencil fa-fw"></i></span>
                 <input type="text" className={`form-control ${errors.bio ? 'is-invalid' : ''}`} placeholder="Enter your bio" {...register('bio', { required: 'User bio is required' }) }/>
                 {errors.bio && (<div className="invalid-feedback">{errors.bio.message}</div> )}
             </div>
 
             {/* LOCATION */}
             <div className="input-group mb-1">
-                <span className="input-group-text"><i className="fa fa-map"></i></span>
+                <span className="input-group-text"><i className="fa fa-map fa-fw"></i></span>
                 <input type="text" className={`form-control ${errors.location ? 'is-invalid' : ''}`} placeholder="Enter your location" {...register('location', { required: 'User location is required' }) }/>
                 {errors.location && (<div className="invalid-feedback">{errors.location.message}</div> )}
             </div>
 
             {/* GENDER */}
             <div className="input-group mb-1">
-                <span className="input-group-text"><i className="fa fa-mercury"></i></span>
+                <span className="input-group-text"><i className="fa fa-mercury fa-fw"></i></span>
                 <input type="text" className={`form-control ${errors.gender ? 'is-invalid' : ''}`} placeholder="Enter your gender" {...register('gender', { required: 'User gender is required' }) }/>
                 {errors.gender && (<div className="invalid-feedback">{errors.gender.message}</div> )}
             </div>
 
             {/* BIRTHDAY */}
             <div className="input-group mb-1">
-                <span className="input-group-text"><i className="fa fa-birthday-cake"></i></span>
+                <span className="input-group-text"><i className="fa fa-birthday-cake fa-fw"></i></span>
                 <input type="text" className={`form-control ${errors.birthday ? 'is-invalid' : ''}`} placeholder="Enter your birthday" {...register('birthday', { required: 'User userName is required' }) }/>
                 {errors.birthday && (<div className="invalid-feedback">{errors.birthday.message}</div> )}
             </div>

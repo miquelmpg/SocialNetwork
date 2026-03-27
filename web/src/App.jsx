@@ -11,10 +11,10 @@ function App() {
   
   return (
     <div className='d-flex flex-column gap-3 p-3' style={{backgroundColor: '#EA7171', backgroundImage: `url(${socialLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
-      {/* <Navbar toggle={toggle} setNumPage={setNumPage}/> */}
-      <Toaster position="top-center"/>
+      <Navbar toggle={toggle} setNumPage={setNumPage}/>
+      <Toaster position="bottom-center" options={{fill: "#171717", styles: { description: "text-white text-center"},}}/>
       <Routes>
-        <Route path='/' element={<HomePage toggle={toggle} setToggle={setToggle} setNumPage={setNumPage}/>} />
+        <Route path='/' element={<HomePage toggle={toggle} setToggle={setToggle} numPage={numPage} setNumPage={setNumPage}/>} />
         <Route path='/users/:id' element={<UserPageActivity toggle={toggle} setToggle={setToggle} />} />
         <Route path='/account/:id' element={<UserAccount />} />
         <Route path='/register' element={<RegisterPage />} />

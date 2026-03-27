@@ -1,14 +1,23 @@
 import { Link } from "react-router-dom";
 import { useAuth } from '../../../contexts/auth-context';
+import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 
 function UserItem({ id, userName, profilePicture, usersFollow, setToggle }) {
     const { user: currentUser } = useAuth();
 
     async function newFollow(id) {
-        await ApiService.createFollow(id);
-        // await ApiService.getProfile(currentUser.id);
-        setToggle((prev) => !prev);
+        try {
+            await ApiService.createFollow(id);
+            setToggle((prev) => !prev);
+        } catch (error) {
+            if (error.response.status) {
+                sileo.error({
+                    title: "Something went wrong",
+                    description: "You cannot follow yourself.",
+                });
+            }
+        }
     }
 
     return (

@@ -22,8 +22,8 @@ function PostTextArea({ setPosts }) {
                         }
                     } catch (error) {
                         if (error.response.status) {
-                            sileo.error({
-                                title: "Something went wrong",
+                            sileo.warning({
+                                title: "Warning",
                                 description: "Offensive language is not allowed.",
                             });
                         }

@@ -1,29 +1,16 @@
 import { useState, useEffect } from 'react';
 import { UserList } from '../components/users';
 import { PostList } from '../components/posts';
-import { Navbar, PaginationArrows } from '../components/ui';
+import { Footer, PaginationArrows } from '../components/ui';
 import { useAuth } from '../contexts/auth-context';
 import * as ApiService from '../services/api-service';
 
-function HomePage({ toggle, setToggle }) {
+function HomePage({ toggle, setToggle, numPage, setNumPage }) {
     const [posts, setPosts] = useState([]);
     const [usersList, setUsersList] = useState([]);
     const [usersFollow, setUsersFollow] = useState([]);
-    const [numPage, setNumPage] = useState(1);
     const [search, setSearch] = useState('');
     const { user } = useAuth();
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    function addOneToPage() {
-        posts.length === 0 ? (setNumPage((prev) => prev - 1), scrollToTop()) : (setNumPage((prev) => prev + 1), scrollToTop());
-    }
-
-    function subtractOneTpoPage() {
-        numPage === 1 ? setNumPage(1) : setNumPage((prev) => prev - 1);
-    }
 
     useEffect(() => {
         async function getFollowing() {
@@ -62,13 +49,12 @@ function HomePage({ toggle, setToggle }) {
 
     return ( 
         <>  
-            <div className='d-flex gap-5'>
+            <div className='d-flex gap-5' style={{ minHeight: 'calc(100vh - 190px)'}}>
                 <UserList usersList={usersList} search={search} setSearch={setSearch} setUsersList={setUsersList} usersFollow={usersFollow} setToggle={setToggle} filter follows={false}/>
                 <PostList setPosts={setPosts} post={posts} setUsersFollow={setUsersFollow} setToggle={setToggle} usersFollow={usersFollow} profile/>
                 <UserList usersList={usersFollow} search={search} setSearch={setSearch} setUsersList={setUsersFollow} setToggle={setToggle} usersFollow={usersFollow} filter={false} follows/>
             </div>
-
-            <PaginationArrows numPage={numPage} addOneToPage={addOneToPage} subtractOneTpoPage={subtractOneTpoPage} posts={posts}/>
+            <Footer numPage={numPage} setNumPage={setNumPage} posts={posts}/>
         </>
     );
 }
