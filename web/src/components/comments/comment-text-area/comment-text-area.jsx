@@ -10,7 +10,7 @@ function CommentTextArea({ setPosts, id }) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setOpacity(1);
-        }, 300);
+        }, 200);
 
         return () => clearTimeout(timer);
     } , []);

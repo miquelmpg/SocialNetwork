@@ -14,6 +14,8 @@ function UserPageActivity({ toggle, setToggle }) {
     const { user: currentUser } = useAuth();
     const { id } = useParams();
 
+    console.log(user)
+
     function addOneToIndexNumber() {
         {user && (index === (user?.posts?.length - 1)) ? setIndex((0)) : setIndex((prev) => prev + 1);}
     }

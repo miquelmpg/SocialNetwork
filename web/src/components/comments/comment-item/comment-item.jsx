@@ -37,7 +37,7 @@ function CommentItem({ id, user, likes, content, createdAt, post, setPosts, user
     useEffect(() => {
         const timer = setTimeout(() => {
             setOpacity(1);
-        }, 300);
+        }, 200);
 
         return () => clearTimeout(timer);
     } , []);

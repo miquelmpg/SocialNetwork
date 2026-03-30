@@ -13,10 +13,12 @@ function UserAccount() {
     const { user: currentUser } = useAuth();
     const { id } = useParams();
     
-    async function deleteAccount(id) {
+    async function deleteAccount() {
         try {
             const confirmed = confirm(`You are going to delete your account. Are you sure?`);
             if (!confirmed) return;
+            // const profile = await ApiService.getProfile(id);
+            // await Promise.all(profile.posts.map(post => ApiService.deletePost(post.id)));
             await ApiService.deleteProfile(currentUser.id);
             navigate('/register')
             sileo.success({
@@ -39,7 +41,7 @@ function UserAccount() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setOpacity(1);
-        }, 300);
+        }, 200);
 
         return () => clearTimeout(timer);
     } , []);

@@ -11,7 +11,7 @@ function UserList({ usersList, search, setSearch, setUsersList, usersFollow, fil
             <div className="d-flex flex-column gap-3 w-25 rounded-5 p-5" style={{backgroundColor: '#e44949'}}>
                 {filter && <Search search={search} setSearch={setSearch}/>}
 
-                {follows && <div className='d-flex text-white'>
+                {follows && <div className='d-flex justify-content-center text-white'>
                                 <div className='rounded-5 text-center' style={{width: '200px', height: '25px', backgroundColor: '#202020'}}>Accounts you follow</div>
                             </div>}
 

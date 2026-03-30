@@ -10,7 +10,7 @@ function App() {
       const [numPage, setNumPage] = useState(1);
   
   return (
-    <div className='d-flex flex-column gap-3 p-3' style={{backgroundColor: '#EA7171', backgroundImage: `url(${socialLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
+    <div className='d-flex flex-column gap-3 p-3' style={{backgroundColor: '#CFCFCF', backgroundImage: `url(${socialLogo})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
       <Navbar toggle={toggle} setNumPage={setNumPage}/>
       <Toaster position="bottom-center" options={{fill: "#171717", styles: { description: "text-white text-center"},}}/>
       <Routes>

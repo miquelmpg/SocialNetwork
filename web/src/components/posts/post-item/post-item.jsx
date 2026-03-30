@@ -37,7 +37,7 @@ function PostItem({ id, user, likes, content, createdAt, setPosts, setToggle, us
     useEffect(() => {
         const timer = setTimeout(() => {
             setOpacity(1);
-        }, 300);
+        }, 200);
 
         return () => clearTimeout(timer);
     } , []);

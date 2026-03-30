@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 
 
 app.use(morgan("dev"));
+app.use(express.static(`./web/build`));
 app.use(cors);
 app.use(express.json());
 app.use(clearBody);
