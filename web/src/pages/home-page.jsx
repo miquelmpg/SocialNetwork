@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { UserList } from '../components/users';
 import { PostList } from '../components/posts';
 import { Footer, PaginationArrows } from '../components/ui';
 import { useAuth } from '../contexts/auth-context';
 import * as ApiService from '../services/api-service';
+import socket from '../services/socket';
 
 function HomePage({ toggle, setToggle, numPage, setNumPage }) {
     const [posts, setPosts] = useState([]);
@@ -11,6 +12,7 @@ function HomePage({ toggle, setToggle, numPage, setNumPage }) {
     const [usersFollow, setUsersFollow] = useState([]);
     const [search, setSearch] = useState('');
     const { user } = useAuth();
+    console.log(posts)
 
     useEffect(() => {
         async function getFollowing() {
@@ -24,15 +26,20 @@ function HomePage({ toggle, setToggle, numPage, setNumPage }) {
         async function profileFetch() {
             const posts = await ApiService.postsList(numPage);
             setPosts(posts);
-        };
+        }
+
         profileFetch();
+    }, [numPage]);
 
-        const interval = setInterval(() => {
-            profileFetch();
-        }, 15000);
+    useEffect(() => {
+        socket.on("new-post", (post) => {
+            setPosts((prev) => [post, ...prev]);
+        });
 
-        return () => clearInterval(interval);
-    }, [toggle, numPage]);
+        return () => {
+            socket.off("new-post");
+        };
+    }, []);
 
     useEffect(() => {
         const timer = search ? 500 : 0;
