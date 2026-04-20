@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function useOpacity() {
+function useFadeIn() {
     const [opacity, setOpacity] = useState(0);
 
     useEffect(() => {
@@ -14,4 +14,4 @@ function useOpacity() {
     return opacity;
 }
 
-export default useOpacity;
+export default useFadeIn;

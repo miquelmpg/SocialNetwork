@@ -5,11 +5,11 @@ import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 import * as DateUtils from '../../../utils/date-utils';
 import socket from '../../../services/socket';
-import useOpacity from '../../../hooks/use-opacity';
+import useFadeIn from '../../../hooks/use-fade-in';
 
 function PostItem({ id, user, likes, content, createdAt, setPosts, setToggle, usersFollow}) {
     const { user: currentUser } = useAuth();
-    const opacity = useOpacity();
+    const opacity = useFadeIn();
 
     async function deletePost(id) {
         try {

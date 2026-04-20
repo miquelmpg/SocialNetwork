@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Layout } from "../components/ui";
 import { RegisterForm } from "../components/auth";
-import useOpacity from '../hooks/use-opacity';
+import useFadeIn from '../hooks/use-fade-in';
 
 function RegisterPage() {
-    const opacity = useOpacity();
+    const opacity = useFadeIn();
 
     return (
         <div className="d-flex justify-content-center align-items-center" style={{width: '100%', minHeight: 'calc(100vh - 32px)'}}>

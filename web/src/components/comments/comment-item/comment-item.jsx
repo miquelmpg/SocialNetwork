@@ -5,11 +5,11 @@ import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 import * as DateUtils from '../../../utils/date-utils';
 import socket from '../../../services/socket';
-import useOpacity from '../../../hooks/use-opacity';
+import useFadeIn from '../../../hooks/use-fade-in';
 
 function CommentItem({ id, user, likes, content, createdAt, post, setPosts, usersFollow, setToggle }) {
     const { user: currentUser } = useAuth();
-    const opacity = useOpacity();
+    const opacity = useFadeIn();
 
     async function deleteComment(postId, commentId) {
         try {
