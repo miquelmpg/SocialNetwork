@@ -11,8 +11,6 @@ function Navbar({ toggle, setNumPage }) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    console.log('user', currentUser)
-
     async function handleLogout() {
         await ApiService.logout();
         navigate('/login');
@@ -43,25 +41,25 @@ function Navbar({ toggle, setNumPage }) {
         };
     }, []);
 
-    useEffect(() => {
-        socket.on("follow:created", ({ follower }) => {
-            setCurrentUser(prev => ({ ...prev, followers: [...prev.followers, { follower: {id: follower} }] }));
-        });
+    // useEffect(() => {
+    //     socket.on("follow:created", ({ follower }) => {
+    //         setCurrentUser(prev => ({ ...prev, followers: [...prev.followers, { follower: {id: follower} }] }));
+    //     });
 
-        return () => {
-            socket.off("follow:created");
-        };
-    }, []);
+    //     return () => {
+    //         socket.off("follow:created");
+    //     };
+    // }, []);
 
-    useEffect(() => {
-        socket.on("follow:deleted", ({ follower }) => {
-            setCurrentUser(prev => ({ ...prev, followers: prev.followers.filter(item => item.follower.id !== follower) }));
-        });
+    // useEffect(() => {
+    //     socket.on("follow:deleted", ({ follower }) => {
+    //         setCurrentUser(prev => ({ ...prev, followers: prev.followers.filter(item => item.follower.id !== follower) }));
+    //     });
 
-        return () => {
-            socket.off("follow:deleted");
-        };
-    }, []);
+    //     return () => {
+    //         socket.off("follow:deleted");
+    //     };
+    // }, []);
 
     useEffect(() => {
         if (!currentUser) return;

@@ -1,17 +1,10 @@
 import { useState, useEffect } from "react";
 import { Layout } from "../components/ui";
 import { RegisterForm } from "../components/auth";
+import useOpacity from '../hooks/use-opacity';
 
 function RegisterPage() {
-    const [opacity, setOpacity] = useState(0);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setOpacity(1);
-        }, 200);
-
-        return () => clearTimeout(timer);
-    } , []);
+    const opacity = useOpacity();
 
     return (
         <div className="d-flex justify-content-center align-items-center" style={{width: '100%', minHeight: 'calc(100vh - 32px)'}}>

@@ -23,6 +23,7 @@ export async function toggle(req, res) {
             follower: req.session.user.id,
             following: req.params.id,
         });
+        
         const io = req.app.get("io");
 
         io.emit("follow:created", {follower: newFollow.follower, following: newFollow.following});

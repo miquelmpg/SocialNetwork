@@ -13,10 +13,12 @@ function HomePage({ toggle, setToggle, numPage, setNumPage }) {
     const [search, setSearch] = useState('');
     const { user } = useAuth();
 
+    console.log(user)
+
     useEffect(() => {
         async function getFollowing() {
             const updatedFollowing = await ApiService.getProfile(user.id);
-            setUsersFollow(updatedFollowing.following.map((follow) => follow.following));
+            setUsersFollow(user.following.map((follow) => follow.following));
         }
         getFollowing();
     }, [toggle]);

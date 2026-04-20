@@ -4,11 +4,12 @@ import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 
 function UserItem({ id, userName, profilePicture, usersFollow, setToggle }) {
-    const { user: currentUser } = useAuth();
+    const { user: currentUser, setUser: setCurrentUser } = useAuth();
 
     async function newFollow(id) {
         try {
             await ApiService.createFollow(id);
+            // setCurrentUser((prev) => [...prev.following || [], {following: {following: {id, profilePicture, userName}}}])
             setToggle((prev) => !prev);
         } catch (error) {
             if (error.response.status) {

@@ -5,10 +5,11 @@ import { sileo } from 'sileo';
 import * as ApiService from '../../../services/api-service';
 import * as DateUtils from '../../../utils/date-utils';
 import socket from '../../../services/socket';
+import useOpacity from '../../../hooks/use-opacity';
 
 function PostItem({ id, user, likes, content, createdAt, setPosts, setToggle, usersFollow}) {
-    const [opacity, setOpacity] = useState(0);
     const { user: currentUser } = useAuth();
+    const opacity = useOpacity();
 
     async function deletePost(id) {
         try {
@@ -46,14 +47,6 @@ function PostItem({ id, user, likes, content, createdAt, setPosts, setToggle, us
             socket.off("post:deleted", handleDelete);
         };
     }, []);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setOpacity(1);
-        }, 200);
-
-        return () => clearTimeout(timer);
-    } , []);
     
     return (
         <div className="container rounded-5 p-5 mb-2" style={{backgroundColor: '#f5f5f5', position: 'relative', opacity, transition: 'opacity 1s ease'}}>
