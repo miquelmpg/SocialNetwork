@@ -26,7 +26,8 @@ export async function toggle(req, res) {
         
         const io = req.app.get("io");
 
-        io.emit("follow:created", {follower: newFollow.follower, following: newFollow.following});
+        io.to(req.session.user.id).emit("follow:created", {follower: newFollow.follower, following: newFollow.following});
+        io.to(req.params.id).emit("follower:created", {follower: newFollow.follower, following: newFollow.following});
 
         res.status(201).json(newFollow);
     } else {
@@ -34,7 +35,8 @@ export async function toggle(req, res) {
 
         const io = req.app.get("io");
 
-        io.emit("follow:deleted", {follower: follow.follower, following: follow.following});
+        io.to(req.session.user.id).emit("follow:deleted", {follower: req.session.user.id, following: req.params.id});
+        io.to(req.params.id).emit("follower:deleted", {follower: req.session.user.id, following: req.params.id});
 
         res.status(204).end();
     }
